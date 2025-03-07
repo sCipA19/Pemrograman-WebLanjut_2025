@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\UserModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LevelModel extends Model
 {
@@ -14,8 +15,8 @@ class LevelModel extends Model
     protected $table = 'm_level';
     protected $primaryKey = 'level_id';
 
-    public function users(): HasMany
+    public function users(): BelongsTo
     {
-        return $this->hasMany(UserModel::class, 'level_id', 'level_id');
+        return $this->belongsTo(UserModel::class, 'level_id', 'level_id');
     }
 }
