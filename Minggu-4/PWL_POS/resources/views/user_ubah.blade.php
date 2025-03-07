@@ -3,20 +3,20 @@
     <a href="/user">Kembali</a>
     <br><br>
 
-    <form method="post" action="/user/ubah_simpan/{{ $data->id }}">
+    <form method="post" action="/user/ubah_simpan/{{ $data->user_id }}">
         {{ csrf_field() }}
-        {{ method_field('PUT') }}
+        {{ method_field("PUT") }}
 
         <label>Username</label>
         <input type="text" name="username" placeholder="Masukan Username" value="{{ $data->username }}">
         <br>
 
         <label>Nama</label>
-        <input type="text" name="nama" placeholder="Masukan Nama" value="{{ $data->nama }}">
+        <input type="text" name="nama" placeholder="Masukan Nama" value="{{ $data->username }}">
         <br>
 
         <label>Password</label>
-        <input type="password" name="password" placeholder="Masukan Password (kosongkan jika tidak ingin mengubah)">
+        <input type="password" name="password" placeholder="Masukan Password" value="{{ $data->password }}">
         <br>
 
         <label>Level ID</label>
