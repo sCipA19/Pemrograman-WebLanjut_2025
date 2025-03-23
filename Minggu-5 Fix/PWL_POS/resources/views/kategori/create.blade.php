@@ -1,52 +1,47 @@
-@extends('layouts.app')
-
-{{-- Customize layout sections --}}
-@section('subtitle', 'Kategori')
-@section('content_header_title', 'Kategori')
-@section('content_header_subtitle', 'Create')
-
-{{-- Content body: main page content --}}
-@section('content')
-    <div class="container">
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Buat Kategori Baru</h3>
-            </div>
-
-            {{-- Formulir --}}
-            <form method="post" action="{{ route('kategori.store') }}">
-                @csrf
-                <div class="card-body">
-                    {{-- Kode Kategori --}}
-                    <div class="form-group">
-                        <label for="kategori_kode">Kode Kategori</label>
-                        <input type="text" class="form-control @error('kategori_kode') is-invalid @enderror" 
-                               id="kategori_kode" name="kategori_kode" 
-                               placeholder="Masukkan kode kategori" 
-                               value="{{ old('kategori_kode') }}" required>
-                        @error('kategori_kode')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    {{-- Nama Kategori --}}
-                    <div class="form-group">
-                        <label for="kategori_nama">Nama Kategori</label>
-                        <input type="text" class="form-control @error('kategori_nama') is-invalid @enderror" 
-                               id="kategori_nama" name="kategori_nama" 
-                               placeholder="Masukkan nama kategori" 
-                               value="{{ old('kategori_nama') }}" required>
-                        @error('kategori_nama')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-                {{-- Tombol Submit --}}
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-@endsection
+@extends('layouts.template')
+ 
+ @section('content')
+ <div class="card card-outline card-primary">
+     <div class="card-header">
+         <h3 class="card-title">{{ $page->title }}</h3>
+         <div class="card-tools"></div>
+     </div>
+     <div class="card-body">
+         <form method="POST" action="{{ url('kategori') }}" class="form-horizontal">
+             @csrf
+             <div class="form-group row mb-2">
+                 <label for="kode" class="col-sm-1 col-form-label mb-1">Kode Kategori</label>
+                 <div class="col-sm-11">
+                     <input type="text" class="form-control" id="kode" name="kode"
+                         value="{{ old('kode') }}" required>
+                     @error('kode')
+                         <small class="form-text text-danger">{{ $message }}</small>
+                     @enderror
+                 </div>
+             </div>
+             <div class="form-group row mb-2">
+                 <label for="nama" class="col-sm-1 col-form-label mb-1">Nama Kategori</label>
+                 <div class="col-sm-11">
+                     <input type="text" class="form-control" id="nama" name="nama"
+                         value="{{ old('nama') }}" required>
+                     @error('nama')
+                         <small class="form-text text-danger">{{ $message }}</small>
+                     @enderror
+                 </div>
+             </div>
+             <div class="form-group row mb-1">
+                 <div class="offset-sm-1 col-sm-11">
+                     <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                     <a class="btn btn-sm btn-default ml-1" href="{{ url('kategori') }}">Kembali</a>
+                 </div>
+             </div>
+         </form>
+     </div>
+ </div>
+ @endsection
+ 
+ @push('css')
+ @endpush
+ 
+ @push('js')
+ @endpush

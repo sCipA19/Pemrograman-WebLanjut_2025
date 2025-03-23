@@ -2,73 +2,128 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KategoriModel;
 use Illuminate\Http\Request;
-use App\DataTables\KategoriDataTable;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use App\Models\KategoriModel;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Http\RedirectResponse;
 
 class KategoriController extends Controller
 {
-    public function index(KategoriDataTable $dataTable)
+    // Menampilkan halaman daftar kategori
+    public function index()
     {
-        return $dataTable->render('kategori.index');
+        $breadcrumb = (object) [
+            'title' => 'Daftar Kategori',
+            'list' => ['Home', 'Kategori']
+        ];
+
+        $page = (object) [
+            'title' => 'Daftar kategori yang terdaftar dalam sistem'
+        ];
+
+        $activeMenu = 'kategori';
+        return view('kategori.index', compact('breadcrumb', 'page', 'activeMenu'));
     }
 
+    // Mengambil data kategori untuk DataTables
+    public function list()
+    {
+        $kategori = KategoriModel::select('kategori_id', 'kategori_kode', 'kategori_nama');
+        return DataTables::of($kategori)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($kategori) {
+                $editUrl = url('/kategori/' . $kategori->kategori_id . '/edit');
+                $deleteUrl = url('/kategori/' . $kategori->kategori_id);
+                
+                return '<a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a> '
+                    . '<form class="d-inline-block" method="POST" action="' . $deleteUrl . '">'
+                    . csrf_field() . method_field('DELETE')
+                    . '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    // Menampilkan form tambah kategori
     public function create()
     {
-        return view('kategori.create');
+        $breadcrumb = (object) [
+            'title' => 'Tambah Kategori',
+            'list' => ['Home', 'Kategori', 'Tambah']
+        ];
+
+        $page = (object) [
+            'title' => 'Tambah kategori baru'
+        ];
+
+        $activeMenu = 'kategori';
+        return view('kategori.create', compact('breadcrumb', 'page', 'activeMenu'));
     }
 
-    public function store(Request $request)
+    // Menyimpan data kategori
+    public function store(Request $request): RedirectResponse
     {
-        // Debugging untuk melihat data yang dikirim
-        Log::info('Data yang dikirim:', $request->all());
-
-        // Pastikan data valid sebelum disimpan
         $request->validate([
-            'kategori_kode' => 'required|string|max:255',
-            'kategori_nama' => 'required|string|max:255',
+            'kode' => 'required|string|min:3|max:10|unique:m_kategori,kategori_kode',
+            'nama' => 'required|string|max:100',
         ]);
 
-        // Simpan ke database
         KategoriModel::create([
-            'kategori_kode' => $request->kategori_kode,
-            'kategori_nama' => $request->kategori_nama,
+            'kategori_kode' => $request->kode,
+            'kategori_nama' => $request->nama,
         ]);
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan!');
+        return redirect('/kategori')->with('success', 'Data kategori berhasil disimpan');
     }
 
-    public function edit($id)
+    // Menampilkan form edit kategori
+    public function edit(string $id)
     {
         $kategori = KategoriModel::findOrFail($id);
-        return view('kategori.edit', compact('kategori'));
+        $breadcrumb = (object) [
+            'title' => 'Edit Kategori',
+            'list' => ['Home', 'Kategori', 'Edit']
+        ];
+
+        $page = (object) [
+            'title' => 'Edit kategori'
+        ];
+
+        $activeMenu = 'kategori';
+        return view('kategori.edit', compact('breadcrumb', 'page', 'kategori', 'activeMenu'));
     }
 
-    public function update(Request $request, $id)
+    // Memperbarui data kategori
+    public function update(Request $request, string $id): RedirectResponse
     {
-        $kategori = KategoriModel::findOrFail($id);
-
-        // Validasi sebelum update
         $request->validate([
-            'kategori_kode' => 'required|string|max:255',
-            'kategori_nama' => 'required|string|max:255',
+            'kode' => 'required|string|min:3|max:10|unique:m_kategori,kategori_kode,' . $id . ',kategori_id',
+            'nama' => 'required|string|max:100',
         ]);
 
-        // Update data
+        $kategori = KategoriModel::findOrFail($id);
         $kategori->update([
-            'kategori_kode' => $request->kategori_kode,
-            'kategori_nama' => $request->kategori_nama,
+            'kategori_kode' => $request->kode,
+            'kategori_nama' => $request->nama,
         ]);
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui!');
+        return redirect('/kategori')->with('success', 'Data kategori berhasil diubah');
     }
 
-    public function destroy($id)
+    // Menghapus data kategori
+    public function destroy(string $id): RedirectResponse
     {
-        $kategori = KategoriModel::findOrFail($id);
-        $kategori->delete();
+        $kategori = KategoriModel::find($id);
+        if (!$kategori) {
+            return redirect('/kategori')->with('error', 'Data kategori tidak ditemukan');
+        }
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus!');
+        try {
+            $kategori->delete();
+            return redirect('/kategori')->with('success', 'Data kategori berhasil dihapus');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect('/kategori')->with('error', 'Data kategori gagal dihapus karena masih terkait dengan data lain');
+        }
     }
 }
