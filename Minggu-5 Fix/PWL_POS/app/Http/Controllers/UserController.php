@@ -38,6 +38,11 @@ class UserController extends Controller
     {
         $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
             ->with('level');
+        
+           // Filter data user berdasarkan level_id
+           if ($request->level_id){
+            $users->where('level_id',$request->level_id);
+        }
 
         return DataTables::of($users)
             ->addIndexColumn() // Menambahkan kolom index / no urut
@@ -186,5 +191,5 @@ public function show(string $id)
                 return redirect('/user')->with('error', 'Data user gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
             }
         }
-        
+
 }
