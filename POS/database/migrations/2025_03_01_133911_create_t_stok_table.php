@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('t_stok', function (Blueprint $table) {
             $table->id('stok_id');
             $table->unsignedBigInteger('barang_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->integer('jumlah');
             $table->timestamps();
 
-            // Foreign Key
-            $table->foreign('barang_id')->references('barang_id')->on('m_barang');
+            // Foreign Key Constraints (Jika Ada)
+            $table->foreign('barang_id')->references('barang_id')->on('m_barang')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

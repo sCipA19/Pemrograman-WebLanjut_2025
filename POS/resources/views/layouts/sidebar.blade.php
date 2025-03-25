@@ -73,7 +73,6 @@
           <p>Transaksi Penjualan</p>
         </a>
       </li>
-
     </ul>
   </nav>
 </div>

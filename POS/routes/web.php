@@ -6,6 +6,7 @@
  use App\Http\Controllers\penjualanController;
  use App\Http\Controllers\StokController;
  use App\Http\Controllers\SupplierController;
+ use App\Http\Controllers\ProductController;
  use App\Http\Controllers\UserController;
  use App\Http\Controllers\WelcomeController;
  use Illuminate\Support\Facades\Route;
@@ -111,4 +112,5 @@ Route::group(['prefix'=>'stok'],function(){
     Route::get('/{id}/edit', [StokController::class,'edit']);
     Route::put('/{id}', [StokController::class,'update']);
     Route::delete('/{id}',[StokController::class,'destroy']);
+    Route::post('/stok/list', [StokController::class, 'list'])->name('stok.list');
 });

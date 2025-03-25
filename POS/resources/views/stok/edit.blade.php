@@ -38,7 +38,7 @@
                          </div>
                      </div>
                      <div class="form-group row">
-                         <label class="col-1 control-label col-form-label">Jumlah Stok</label>
+                         <label class="col-1 control-label col-form-label">Jumlah</label>
                          <div class="col-11">
                              <input type="text" class="form-control" id="stok_jumlah" name="stok_jumlah"
                                  value="{{ old('stok_jumlah', $stok->stok_jumlah) }}" required>
