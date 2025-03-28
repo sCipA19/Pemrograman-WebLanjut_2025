@@ -39,14 +39,14 @@ class UserController extends Controller
         }
 
         return DataTables::of($users)
-            ->addIndexColumn() // Menambahkan kolom index / no urut
+            ->addIndexColumn()
             ->addColumn('aksi', function ($user) {
                 $btn  = '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/delete_ajax').'\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
-            ->rawColumns(['aksi']) // Memberitahu bahwa kolom aksi adalah HTML
+            ->rawColumns(['aksi'])
             ->make(true);
     }
 
@@ -98,49 +98,67 @@ class UserController extends Controller
     }
 
     public function update_ajax(Request $request, $id)
-{
-    if ($request->ajax() || $request->wantsJson()) {
-        $rules = [
-            'level_id' => 'required|integer',
-            'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
-            'nama' => 'required|max:100',
-            'password' => 'nullable|min:6|max:20'
-        ];
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'level_id' => 'required|integer',
+                'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
+                'nama' => 'required|max:100',
+                'password' => 'nullable|min:6|max:20'
+            ];
 
-        // Validasi input
-        $validator = Validator::make($request->all(), $rules);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false, // false: validasi gagal
-                'message' => 'Validasi gagal.',
-                'msgField' => $validator->errors() // Menampilkan field yang error
-            ]);
-        }
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal.',
+                    'msgField' => $validator->errors()
+                ]);
+            }
 
-        // Cek apakah user dengan ID tersebut ada
-        $user = UserModel::find($id);
-        if (!$user) {
+            $user = UserModel::find($id);
+            if ($user) {
+                if (!$request->filled('password')) {
+                    $request->request->remove('password');
+                }
+
+                $user->update($request->all());
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diupdate'
+                ]);
+            }
+
             return response()->json([
                 'status' => false,
                 'message' => 'Data tidak ditemukan'
             ]);
         }
-
-        // Jika password tidak diisi, hapus dari request sebelum update
-        $data = $request->except(['password']);
-        if ($request->filled('password')) {
-            $data['password'] = bcrypt($request->password);
-        }
-
-        // Update data user
-        $user->update($data);
-
-        return response()->json([
-            'status' => true, // true: update berhasil
-            'message' => 'Data berhasil diupdate'
-        ]);
+        return redirect('/');
     }
 
-    return redirect('/');
-}
+    public function confirm_ajax(string $id)
+    {
+        $user = UserModel::find($id);
+        return view('user.confirm_ajax', ['user' => $user]);
+    }
+
+    public function delete_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $user = UserModel::find($id);
+            if ($user) {
+                $user->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ]);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+    }
 }
