@@ -20,7 +20,7 @@
                     </tr>
                     <tr>
                         <th>Level</th>
-                        <td>{{ $user->level->level_nama   }}</td>
+                        <td>{{ $user->level->level_nama }}</td>
                     </tr>
                     <tr>
                         <th>Username</th>
@@ -42,7 +42,4 @@
 @endsection
 
 @push('css')
-@endpush
-
-@push('js')
 @endpush
