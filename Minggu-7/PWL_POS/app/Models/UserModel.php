@@ -21,10 +21,13 @@ class UserModel extends Authenticatable
     {
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
     }
-
-    // Tambahan: gunakan kolom username untuk login
-    public function getAuthIdentifierName()
+    public function getRoleName(): string
     {
-        return 'username';
+        return $this->level->level_name;
+    }
+
+    public function hasRole($role): bool
+    {
+        return $this->level->level_kode == $role;
     }
 }
