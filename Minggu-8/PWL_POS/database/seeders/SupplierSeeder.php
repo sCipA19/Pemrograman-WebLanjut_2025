@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +17,7 @@ class SupplierSeeder extends Seeder
             ['supplier_id' => 2, 'supplier_kode' => 'MST', 'supplier_nama' => 'CV. Makanan Sehat', 'supplier_alamat' => 'Bandung'],
             ['supplier_id' => 3, 'supplier_kode' => 'FUI', 'supplier_nama' => 'UD. Furniture Indah', 'supplier_alamat' => 'Surabaya'],
         ];
-        DB::table('m_supplier')->insert($data);
+
+        DB::table('m_supplier')->upsert($data, ['supplier_id']);
     }
 }
