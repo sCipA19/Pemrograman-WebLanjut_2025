@@ -1,6 +1,6 @@
-<form action="{{ url('/level/import_ajax') }}" method="POST" id="form-import-level" enctype="multipart/form-data">
+<form action="{{ url('/level/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
     @csrf
-    <div class="modal-dialog modal-lg" role="document">
+    <div id="modal-master" class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Import Data Level</h5>
@@ -11,9 +11,9 @@
 
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Download Template</label>
+                    <label>Download Template</label><br>
                     <a href="{{ asset('template_level.xlsx') }}" class="btn btn-info btn-sm" download>
-                        <i class="fa fa-file-excel"></i> Download
+                        <i class="fa fa-file-excel"></i> Download Template
                     </a>
                     <small id="error-template" class="error-text form-text text-danger"></small>
                 </div>
@@ -35,7 +35,7 @@
 
 <script>
     $(document).ready(function () {
-        $("#form-import-level").validate({
+        $("#form-import").validate({
             rules: {
                 file_level: {
                     required: true,
@@ -59,7 +59,9 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            $('#table_level').DataTable().ajax.reload();
+                            if (typeof tableLevel !== 'undefined') {
+                                tableLevel.ajax.reload(); // reload datatable jika ada
+                            }
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function (prefix, val) {
@@ -73,6 +75,7 @@
                         }
                     }
                 });
+
                 return false;
             },
             errorElement: 'span',
