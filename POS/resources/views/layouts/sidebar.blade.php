@@ -58,7 +58,7 @@
             </li>
             <li class="nav-item mb-1">
                 <a href="{{ url('/supplier') }}" class="nav-link {{ ($activeMenu == 'supplier') ? 'bg-primary text-white' : 'text-white' }}" style="border-radius: 10px;">
-                    <i class="fas fa-hippo me-2"></i> Data Supplier
+                    <i class="fas fa-box-open me-2"></i> Data Supplier
                 </a>
             </li>
             <li class="nav-item mb-1">

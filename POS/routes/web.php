@@ -186,9 +186,9 @@ Route::middleware(['authorize:ADM,MNG,STF'])->prefix('stok')->group(function () 
 
 Route::middleware(['authorize:ADM,MNG,STF'])->prefix('transaksi')->group(function () {
     Route::get('/', [TransaksiController::class, 'index'])->name('transaksi.index');
-    Route::post('/list', [TransaksiController::class, 'getPenjualan'])->name('transaksi.list');
+    Route::post('/list', [TransaksiController::class, 'getPenjualan'])->name('transaksi.list'); // Menampilkan data transaksi dalam bentuk JSON untuk DataTables
     Route::get('/{id}/show_ajax', [TransaksiController::class, 'show_ajax']);
 });
 
 });
-    
+
