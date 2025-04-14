@@ -133,8 +133,6 @@ Route::middleware(['authorize:ADM,MNG,STF'])->prefix('supplier')->group(function
     Route::get('/export_pdf', [SupplierController::class, 'export_pdf']);
 });
 
-
-
 Route::middleware(['authorize:ADM,MNG,STF'])->prefix('barang')->group(function () {
     Route::get('/', [BarangController::class, 'index'])->name('barang.index');
     Route::post('/list', [BarangController::class, 'getBarang'])->name('barang.list');
