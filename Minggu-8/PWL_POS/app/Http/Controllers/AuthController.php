@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; 
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,10 +12,8 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            // Jika sudah login, redirect ke halaman home
             return redirect('/');
         }
-
         return view('auth.login');
     }
 
@@ -24,16 +22,16 @@ class AuthController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $credentials = $request->only('username', 'password');
 
-            if (Auth::attempt($credentials)) {
+            if (Auth::attempt($credentials)) { 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Login Berhasil',
+                    'message' => 'Login Berhasil', 
                     'redirect' => url('/')
                 ]);
             }
 
-            return response()->json([
-                'status' => false,
+            return response()->json([ 
+                'status' => false, 
                 'message' => 'Login Gagal'
             ]);
         }
@@ -44,18 +42,20 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
+        $request->session()->regenerateToken(); 
         return redirect('login');
     }
 
     public function register()
     {
+        // Coba tambahkan dd() untuk cek datanya:
         $level = LevelModel::select('level_id', 'level_nama')->get();
 
-        return view('auth.register')->with('level', $level);
+        // Jika kamu mau debugging:
+        // dd($level); // <-- Hapus ini nanti setelah cek data keluar
+
+        return view('auth.register', compact('level'));
     }
 
     public function store_user(Request $request)
@@ -66,16 +66,14 @@ class AuthController extends Controller
             'password' => 'required|min:5',
             'level_id' => 'required|integer',
         ]);
-
-        // Menyimpan user baru
+    
         UserModel::create([
             'username' => $request->username,
             'nama'     => $request->nama,
-            'password' => bcrypt($request->password), // Enkripsi password
+            'password' => bcrypt($request->password),
             'level_id' => $request->level_id,
         ]);
-
-        // Mengirim respons JSON jika permintaan AJAX
+    
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'status' => true,
@@ -83,8 +81,7 @@ class AuthController extends Controller
                 'redirect' => url('login')
             ]);
         }
-
-        // Jika bukan AJAX, redirect ke halaman utama dengan flash message
+    
         return redirect('/')->with('success', 'Registrasi berhasil');
     }
 }

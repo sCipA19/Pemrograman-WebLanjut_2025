@@ -1,6 +1,6 @@
 <form action="{{ url('/user/import_ajax') }}" method="POST" id="form-import-user" enctype="multipart/form-data">
     @csrf
-    <div class="modal-dialog modal-lg" role="document">
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Import Data Pengguna</h5>
@@ -8,78 +8,85 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Download Template</label><br>
-                    <a href="{{ asset('template/template_user.xlsx') }}" class="btn btn-info btn-sm" download>
+                    <label>Download Template</label>
+                    <a href="{{ asset('template_user.xlsx') }}" class="btn btn-info btn-sm" download>
                         <i class="fa fa-file-excel"></i> Download
                     </a>
+                    <small id="error-template" class="error-text form-text text-danger"></small>
                 </div>
+
                 <div class="form-group">
-                    <label>Pilih File Excel</label>
-                    <input type="file" name="file_user" id="file_user" class="form-control" required accept=".xlsx">
-                    <small id="error-file_user" class="text-danger"></small>
+                    <label>Pilih File</label>
+                    <input type="file" name="file_user" id="file_user" class="form-control" required>
+                    <small id="error-file_user" class="error-text form-text text-danger"></small>
                 </div>
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
                 <button type="submit" class="btn btn-primary">Upload</button>
             </div>
         </div>
     </div>
 </form>
 
-@push('js')
 <script>
-    // Validasi dan Submit AJAX
-    $("#form-import-user").validate({
-        rules: {
-            file_user: {
-                required: true,
-                extension: "xlsx"
-            }
-        },
-        messages: {
-            file_user: {
-                required: "Silakan pilih file Excel.",
-                extension: "File harus berformat .xlsx"
-            }
-        },
-        errorPlacement: function(error, element) {
-            $('#error-' + element.attr('name')).text(error.text());
-        },
-        success: function(label, element) {
-            $('#error-' + $(element).attr('name')).text('');
-        },
-        submitHandler: function(form) {
-            let formData = new FormData(form);
-
-            $.ajax({
-                url: form.action,
-                method: form.method,
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (res) {
-                    if (res.status) {
-                        $('#myModal').modal('hide');
-                        Swal.fire('Berhasil', res.message, 'success');
-                        dataUser.ajax.reload();
-                    } else {
-                        // Tampilkan error field
-                        $.each(res.msgField ?? {}, function (field, msg) {
-                            $('#error-' + field).text(msg[0]);
-                        });
-                        Swal.fire('Gagal', res.message, 'error');
-                    }
+    $(document).ready(function () {
+        $("#form-import-user").validate({
+            rules: {
+                file_user: {
+                    required: true,
+                    extension: "xlsx"
                 },
-                error: function (xhr) {
-                    Swal.fire('Error', 'Terjadi kesalahan pada server.', 'error');
-                }
-            });
+            },
+            submitHandler: function (form) {
+                var formData = new FormData(form);
 
-            return false;
-        }
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status) {
+                            $('#myModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message
+                            });
+                            tableUser.ajax.reload();
+                        } else {
+                            $('.error-text').text('');
+                            $.each(response.msgField, function (prefix, val) {
+                                $('#error-' + prefix).text(val[0]);
+                            });
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Terjadi Kesalahan',
+                                text: response.message
+                            });
+                        }
+                    }
+                });
+
+                return false;
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('is-invalid');
+            }
+        });
     });
 </script>
-@endpush

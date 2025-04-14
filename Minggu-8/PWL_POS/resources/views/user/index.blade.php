@@ -1,97 +1,68 @@
 @extends('layouts.template')
 
 @section('content')
-<div class="card card-outline card-primary">
+<div class="card">
     <div class="card-header">
-        <h3 class="card-title">{{ $page->title }}</h3>
+        <h3 class="card-title">Daftar Pengguna</h3>
+        <div class="text-right mb-3">
+            <a href="{{ route('profile.edit') }}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-user"></i> Profil Saya
+            </a>
+        </div>        
         <div class="card-tools">
-            <a class="btn btn-sm btn-primary mt-1" href="{{ url('user/create') }}">Tambah Data</a>
-            <button onclick="modalAction('{{ url('user/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Data (Ajax)</button>
-            <button class="btn btn-sm btn-info mt-1" onclick="$('#modalImportUser').modal('show')">Import User</button>
+            <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-info">Import User</button>
+            <a href="{{ url('/user/export_excel') }}" class="btn btn-primary"><i class="fa fa-file- excel"></i> Export User</a>
+            <a href="{{ url('/user/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file- pdf"></i> Export User</a>
+            <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
         </div>
     </div>
+    
     <div class="card-body">
+        <!-- Filter -->
+        <div id="filter" class="form-horizontal filter-date p-2 border-bottom mb-2">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-sm row text-sm mb-0">
+                        <label for="filter_level" class="col-md-1 col-form-label">Filter</label>
+                        <div class="col-md-3">
+                            <select name="filter_level" class="form-control form-control-sm filter_level" id="filter_level">
+                                <option value="">- Semua -</option>
+                                @foreach($level as $l)
+                                <option value="{{ $l->level_id }}">{{ $l->level_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Level Pengguna</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+
         @if(session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <!-- Filter berdasarkan Level Pengguna -->
-        <div class="row mb-3">
-            <div class="col-md-12">
-                <div class="form-group row">
-                    <label class="col-1 control-label col-form-label">Filter:</label>
-                    <div class="col-3">
-                        <select class="form-control" id="level_id" name="level_id">
-                            <option value="">- Semua -</option>
-                            @foreach ($level as $item)
-                                <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
-                            @endforeach
-                        </select>
-                        <small class="form-text text-muted">Level Pengguna</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabel Data User -->
-        <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
+        <table class="table table-bordered table-sm table-striped table-hover" id="table-user">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>No</th>
                     <th>Username</th>
                     <th>Nama</th>
-                    <th>Level Pengguna</th>
+                    <th>Level</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
-<!-- Modal Ajax Create -->
-<div id="myModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"></div>
-
-<!-- Modal Import User -->
-<div class="modal fade" id="modalImportUser" tabindex="-1" aria-labelledby="modalImportUserLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="form-import-user" enctype="multipart/form-data">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalImportUserLabel">Import Data User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <label class="form-label">Download Template</label><br>
-                    <a href="{{ asset('template/user_template.xlsx') }}" class="btn btn-sm btn-success mb-3">Download</a>
-
-                    <div class="mb-3">
-                        <label for="file_user" class="form-label">Pilih File Excel</label>
-                        <input type="file" name="file_user" id="file_user" class="form-control" accept=".xlsx" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+<div id="myModal" class="modal fade animate shake" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="75%"></div>
 @endsection
-
-@push('css')
-<style>
-    .card-tools .btn {
-        font-size: 0.95rem;
-        padding: 0.5rem 0.8rem;
-        margin-right: 0.5rem;
-    }
-</style>
-@endpush
 
 @push('js')
 <script>
@@ -101,58 +72,63 @@
         });
     }
 
-    var dataUser;
+    var tableUser;
+
     $(document).ready(function () {
-        dataUser = $('#table_user').DataTable({
+        tableUser = $('#table-user').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 url: "{{ url('user/list') }}",
                 type: "POST",
                 data: function (d) {
-                    d.level_id = $('#level_id').val();
+                    d.level_id = $('#filter_level').val();
                 }
             },
             columns: [
-                { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
-                { data: "username" },
-                { data: "nama" },
-                { data: "level.level_nama", orderable: false, searchable: false },
-                { data: "aksi", orderable: false, searchable: false }
+                {
+                    data: "DT_RowIndex",
+                    className: "text-center",
+                    width: "5%",
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: "username",
+                    width: "20%",
+                    orderable: true,
+                    searchable: true
+                },
+                {
+                    data: "nama",
+                    width: "30%",
+                    orderable: true,
+                    searchable: true
+                },
+                {
+                    data: "level.level_nama",
+                    width: "20%",
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: "aksi",
+                    className: "text-center",
+                    width: "15%",
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
 
-        $('#level_id').on('change', function () {
-            dataUser.ajax.reload();
+        $('#table-user_filter input').unbind().bind().on('keyup', function (e) {
+            if (e.keyCode == 13) {
+                tableUser.search(this.value).draw();
+            }
         });
 
-        $('#form-import-user').on('submit', function (e) {
-            e.preventDefault();
-            let formData = new FormData(this);
-
-            $.ajax({
-                url: "{{ route('user.import_ajax') }}",
-                method: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (res) {
-                    if (res.status) {
-                        alert(res.message);
-                        $('#modalImportUser').modal('hide');
-                        dataUser.ajax.reload();
-                    } else {
-                        alert(res.message);
-                    }
-                },
-                error: function (xhr) {
-                    let message = 'Terjadi kesalahan saat mengimpor data.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        message += '\n' + xhr.responseJSON.message;
-                    }
-                    alert(message);
-                }
-            });
+        $('#filter_level').change(function () {
+            tableUser.draw();
         });
     });
 </script>

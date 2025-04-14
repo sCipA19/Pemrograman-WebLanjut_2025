@@ -4,44 +4,24 @@
 <div class="card card-outline card-primary">
     <div class="card-header">
         <h3 class="card-title">{{ $page->title }}</h3>
-        <div class="card-tools"></div>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ url('kategori') }}" class="form-horizontal">
+        <form method="POST" action="{{ route('kategori.store') }}">
             @csrf
-            <div class="form-group row mb-2">
-                <label for="kode" class="col-sm-1 col-form-label mb-1">Kode Kategori</label>
-                <div class="col-sm-11">
-                    <input type="text" class="form-control" id="kode" name="kode"
-                        value="{{ old('kode') }}" required>
-                    @error('kode')
-                        <small class="form-text text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+
+            <div class="form-group">
+                <label>Kode Kategori</label>
+                <input type="text" class="form-control" name="kategori_kode" required>
             </div>
-            <div class="form-group row mb-2">
-                <label for="nama" class="col-sm-1 col-form-label mb-1">Nama Kategori</label>
-                <div class="col-sm-11">
-                    <input type="text" class="form-control" id="nama" name="nama"
-                        value="{{ old('nama') }}" required>
-                    @error('nama')
-                        <small class="form-text text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+
+            <div class="form-group">
+                <label>Nama Kategori</label>
+                <input type="text" class="form-control" name="kategori_nama" required>
             </div>
-            <div class="form-group row mb-1">
-                <div class="offset-sm-1 col-sm-11">
-                    <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                    <a class="btn btn-sm btn-default ml-1" href="{{ url('kategori') }}">Kembali</a>
-                </div>
-            </div>
+
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{{ route('kategori.index') }}" class="btn btn-default">Kembali</a>
         </form>
     </div>
 </div>
 @endsection
-
-@push('css')
-@endpush
-
-@push('js')
-@endpush

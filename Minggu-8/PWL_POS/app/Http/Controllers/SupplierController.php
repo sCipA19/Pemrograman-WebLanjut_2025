@@ -307,7 +307,6 @@
                          $insert[] = [
                              'supplier_nama' => $value['A'],
                              'supplier_alamat' => $value['B'],
-                             'supplier_telepon' => $value['C'],
                              'created_at' => now(),
                          ];
                      }

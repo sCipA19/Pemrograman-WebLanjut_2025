@@ -77,6 +77,7 @@
                     username: { required: true, minlength: 4, maxlength: 20 },
                     nama: { required: true, maxlength: 50 },
                     password: { required: true, minlength: 5, maxlength: 20 },
+                    password_confirmation: { equalTo: "[name='password']" },
                     level_id: { required: true, number: true }
                 },
                 submitHandler: function (form) {
@@ -88,6 +89,7 @@
                         type: form.method,
                         data: $(form).serialize(),
                         success: function (response) {
+                            console.log(response);  // Log respons untuk melihat data yang diterima
                             if (response.status) {
                                 Swal.fire({
                                     icon: 'success',
@@ -116,7 +118,7 @@
                 errorElement: 'span',
                 errorPlacement: function (error, element) {
                     error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
+                    element.closest('.input-group').append(error);
                 },
                 highlight: function (element) {
                     $(element).addClass('is-invalid');
