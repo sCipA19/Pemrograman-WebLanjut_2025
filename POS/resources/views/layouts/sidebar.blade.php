@@ -50,7 +50,7 @@
             {{-- Tambahan Profil Saya --}}
             <li class="nav-item">
                 <a href="{{ route('profile.edit') }}" class="nav-link {{ ($activeMenu == 'profile')? 'active' : '' }}">
-                    <i class="nav-icon fas fa-user-circle"></i>
+                    <i class="fas fa-user-astronaut"></i>
                     <p>Profil Saya</p>
                 </a>
             </li>
