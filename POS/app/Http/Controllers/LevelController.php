@@ -33,7 +33,7 @@ class LevelController extends Controller
     public function getLevels(Request $request)
     {
         if ($request->ajax()) {
-            $data = LevelModel::select('level_id', 'level_kode', 'level_nama');
+            $data = LevelModel::select('level_id', 'level_kode', 'level_name');
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -73,12 +73,12 @@ class LevelController extends Controller
     {
         $request->validate([
             'level_kode' => 'required|string|unique:m_level,level_kode',
-            'level_nama' => 'required|string'
+            'level_name' => 'required|string'
         ]);
 
         LevelModel::create([
             'level_kode' => $request->level_kode,
-            'level_nama' => $request->level_nama
+            'level_name' => $request->level_name
         ]);
 
         return redirect('/level')->with('success', 'Data Level berhasil ditambahkan');
@@ -108,13 +108,13 @@ class LevelController extends Controller
     {
         $request->validate([
             'level_kode' => 'required|string|unique:m_level,level_kode,' . $id . ',level_id',
-            'level_nama' => 'required|string'
+            'level_name' => 'required|string'
         ]);
 
         $level = LevelModel::findOrFail($id);
         $level->update([
             'level_kode' => $request->level_kode,
-            'level_nama' => $request->level_nama
+            'level_name' => $request->level_name
         ]);
 
         return redirect('/level')->with('success', 'Data Level berhasil diperbarui');
@@ -184,7 +184,7 @@ class LevelController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'level_kode' => 'required|string|min:3|unique:m_level,level_kode',
-                'level_nama' => 'required|string|max:100',
+                'level_name' => 'required|string|max:100',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -199,7 +199,7 @@ class LevelController extends Controller
 
             LevelModel::create([
                 'level_kode' => $request->level_kode,
-                'level_nama' => $request->level_nama,
+                'level_name' => $request->level_name,
             ]);
 
             return response()->json([
@@ -227,7 +227,7 @@ class LevelController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'level_kode' => 'required|max:10|unique:m_level,level_kode,' . $id . ',level_id',
-                'level_nama' => 'required|max:100'
+                'level_name' => 'required|max:100'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -331,7 +331,7 @@ class LevelController extends Controller
                     if ($index > 1) { // Lewati header (baris pertama)
                         $insert[] = [
                             'level_kode' => $row['A'],
-                            'level_nama' => $row['B'],
+                            'level_name' => $row['B'],
                             'created_at' => now(),
                         ];
                     }
@@ -359,7 +359,7 @@ class LevelController extends Controller
     public function export_excel()
     {
         // Ambil data level dari database
-        $level = LevelModel::select('level_kode', 'level_nama')
+        $level = LevelModel::select('level_kode', 'level_name')
             ->orderBy('level_kode')
             ->get();
 
@@ -380,7 +380,7 @@ class LevelController extends Controller
         foreach ($level as $item) {
             $sheet->setCellValue('A' . $baris, $no);
             $sheet->setCellValue('B' . $baris, $item->level_kode);
-            $sheet->setCellValue('C' . $baris, $item->level_nama);
+            $sheet->setCellValue('C' . $baris, $item->level_name);
             $baris++;
             $no++;
         }
@@ -412,7 +412,7 @@ class LevelController extends Controller
     {
         ini_set('max_execution_time', 300); // biar tidak timeout
 
-        $level = LevelModel::orderBy('level_nama')->get();
+        $level = LevelModel::orderBy('level_name')->get();
 
         $pdf = Pdf::loadView('level.export_pdf', ['level' => $level]);
         $pdf->setPaper('a4', 'portrait');

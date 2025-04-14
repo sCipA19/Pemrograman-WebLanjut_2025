@@ -16,9 +16,9 @@
                 </div>
                 <div class="form-group">
                     <label>Level Nama</label>
-                    <input value="" type="text" name="level_nama" id="level_nama" class="form-control"
+                    <input value="" type="text" name="level_name" id="level_name" class="form-control"
                         required>
-                    <small id="error-level_nama" class="error-text form-text text-danger"></small>
+                    <small id="error-level_name" class="error-text form-text text-danger"></small>
                 </div>
 
             </div>
@@ -38,7 +38,7 @@
                     minlength: 3,
                     maxlength: 20
                 },
-                level_nama: {
+                level_name: {
                     required: true,
                     minlength: 0,
                     maxlength: 100
