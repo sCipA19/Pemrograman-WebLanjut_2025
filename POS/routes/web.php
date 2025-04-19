@@ -26,7 +26,7 @@ use App\Http\Controllers\TransaksiController;
 
 Route::pattern('id', '[0-9]+'); //artinya ketika parameter {id}, maka harus berupa angka
 
-Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::get('login', [AuthController::class, 'login'])->name('login'); 
 Route::post('login', [AuthController::class, 'postLogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
@@ -69,7 +69,6 @@ Route::middleware(['authorize:ADM,MNG,STF'])->prefix('user')->group(function (){
     Route::post('/import_ajax', [UserController::class, 'import_ajax']);
     Route::get('/export_excel', [UserController::class, 'export_excel']);
     Route::get('/export_pdf', [UserController::class, 'export_pdf']);
-    
 });
 
 Route::middleware(['authorize:ADM,MNG,STF'])->prefix('level')->group(function () {
@@ -83,7 +82,7 @@ Route::middleware(['authorize:ADM,MNG,STF'])->prefix('level')->group(function ()
     Route::get('/{id}/show_ajax', [LevelController::class, 'show_ajax']);
     Route::get('/{id}/edit_ajax', [LevelController::class, 'edit_ajax'])->name('level.edit_ajax'); // Form edit (AJAX)
     Route::put('/{id}/update_ajax', [LevelController::class, 'update_ajax'])->name('level.update_ajax'); // Simpan perubahan (AJAX)
-    Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax'])->name('level.confirm_ajax'); 
+    Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax'])->name('level.confirm_ajax');
     Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax'])->name('level.delete_ajax');
     Route::get('/{id}/edit', [LevelController::class, 'edit'])->name('level.edit'); // Form edit
     Route::put('/{id}', [LevelController::class, 'update'])->name('level.update'); // Simpan perubahan
@@ -188,6 +187,10 @@ Route::middleware(['authorize:ADM,MNG,STF'])->prefix('transaksi')->group(functio
     Route::get('/', [TransaksiController::class, 'index'])->name('transaksi.index');
     Route::post('/list', [TransaksiController::class, 'getPenjualan'])->name('transaksi.list'); // Menampilkan data transaksi dalam bentuk JSON untuk DataTables
     Route::get('/{id}/show_ajax', [TransaksiController::class, 'show_ajax']);
+    Route::get('/transaksi/{id}/edit_ajax', [TransaksiController::class, 'edit_ajax']);
+Route::post('/transaksi/{id}/update', [TransaksiController::class, 'update']);
+Route::get('/transaksi/{id}/delete_ajax', [TransaksiController::class, 'delete_ajax']); // Route untuk delete via AJAX:
+Route::post('/transaksi/{id}/destroy', [TransaksiController::class, 'destroy']); // Proses delete: bisa menggunakan method POST; alternatifnya juga bisa memakai method DELETE
 });
 
 });
