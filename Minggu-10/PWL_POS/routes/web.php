@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\TransaksiController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,7 +27,7 @@ use App\Http\Controllers\TransaksiController;
 
 Route::pattern('id', '[0-9]+'); //artinya ketika parameter {id}, maka harus berupa angka
 
-Route::get('login', [AuthController::class, 'login'])->name('login'); 
+Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postLogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
