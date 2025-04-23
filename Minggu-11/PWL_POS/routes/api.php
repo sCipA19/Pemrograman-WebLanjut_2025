@@ -50,3 +50,4 @@ Route::get('kategoris', [KategoriController::class, 'index']);
  Route::get('barangs/{barang}', [BarangController::class, 'show']);
  Route::put('barangs/{barang}', [BarangController::class, 'update']);
  Route::delete('barangs/{barang}', [BarangController::class, 'destroy']);
+ 

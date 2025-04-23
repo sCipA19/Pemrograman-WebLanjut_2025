@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
 class BarangModel extends Model
 {
     use HasFactory;
@@ -19,7 +18,8 @@ class BarangModel extends Model
         'barang_nama',
         'kategori_id',
         'harga_beli',
-        'harga_jual'
+        'harga_jual',
+        'image', // Menambahkan kolom 'image' ke fillable
     ];
 
     // Relasi ke tabel kategori (m_kategori)
@@ -28,10 +28,15 @@ class BarangModel extends Model
         return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');
     }
 
+    // Relasi ke detail penjualan
     public function detail_penjualan()
     {
         return $this->hasMany(PenjualanDetailModel::class, 'barang_id');
     }
 
+    // Accessor untuk mendapatkan URL gambar
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? url('storage/' . $this->image) : null; // Menghasilkan URL gambar jika ada
+    }
 }
-
