@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class BarangModel extends Model
 {
@@ -19,8 +20,16 @@ class BarangModel extends Model
         'kategori_id',
         'harga_beli',
         'harga_jual',
-        'image', // Menambahkan kolom 'image' ke fillable
+        'image', // Kolom image
     ];
+
+    // Accessor untuk mengubah path image jadi URL storage
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? url('/storage/barang/' . $value) : null
+        );
+    }
 
     // Relasi ke tabel kategori (m_kategori)
     public function kategori()
@@ -31,12 +40,6 @@ class BarangModel extends Model
     // Relasi ke detail penjualan
     public function detail_penjualan()
     {
-        return $this->hasMany(PenjualanDetailModel::class, 'barang_id');
-    }
-
-    // Accessor untuk mendapatkan URL gambar
-    public function getImageUrlAttribute()
-    {
-        return $this->image ? url('storage/' . $this->image) : null; // Menghasilkan URL gambar jika ada
+        return $this->hasMany(PenjualanDetailModel::class, 'barang_id', 'barang_id');
     }
 }
